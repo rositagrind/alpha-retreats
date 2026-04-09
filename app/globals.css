@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* --font-bebas and --font-inter are injected by next/font in layout.tsx */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0A0A0A;
+  color: #F5F0E8;
+  font-family: var(--font-inter);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-bebas);
+    letter-spacing: 0.05em;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-burnt-orange text-white font-body font-semibold uppercase tracking-widest px-8 py-3 rounded hover:bg-orange-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply border border-off-white text-off-white font-body font-semibold uppercase tracking-widest px-8 py-3 rounded hover:bg-off-white hover:text-dark-bg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8 py-16 lg:py-24;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .heading-xl {
+    @apply font-heading text-5xl sm:text-6xl lg:text-8xl text-off-white leading-none;
+  }
+
+  .heading-lg {
+    @apply font-heading text-4xl sm:text-5xl lg:text-6xl text-off-white leading-none;
+  }
+
+  .heading-md {
+    @apply font-heading text-3xl sm:text-4xl text-off-white leading-none;
+  }
+
+  .card-dark {
+    @apply bg-dark-card border border-dark-border rounded-lg overflow-hidden;
+  }
+
+  .input-dark {
+    @apply bg-dark-card border border-dark-border text-off-white placeholder-gray-500 rounded px-4 py-3 w-full focus:outline-none focus:border-burnt-orange transition-colors;
+  }
+
+  .label-dark {
+    @apply block text-sm font-body font-medium text-gray-300 mb-1 uppercase tracking-wider;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold uppercase tracking-wider;
+  }
+}
+
+/* Tiptap editor styles */
+.tiptap-editor .ProseMirror {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  min-height: 200px;
+  color: #F5F0E8;
+  outline: none;
+}
+
+.tiptap-editor .ProseMirror:focus {
+  border-color: #C4622D;
+}
+
+.tiptap-editor .ProseMirror p {
+  margin-bottom: 0.75rem;
+}
+
+.tiptap-editor .ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tiptap-editor .ProseMirror ul,
+.tiptap-editor .ProseMirror ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tiptap-editor .ProseMirror li {
+  margin-bottom: 0.25rem;
+}
+
+/* Retreat description content styles */
+.retreat-content p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.retreat-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
+  color: #F5F0E8;
+}
+
+.retreat-content ul,
+.retreat-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.retreat-content li {
+  margin-bottom: 0.5rem;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C4622D;
+}

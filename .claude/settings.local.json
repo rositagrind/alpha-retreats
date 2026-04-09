@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(supabase --version)",
+      "Bash(curl:*)",
+      "Bash(xargs kill:*)",
+      "Bash(npm --prefix /c/Users/salva/Desktop/alpha-retreats run dev)",
+      "Bash(cmd.exe:*)",
+      "Bash(cmd:*)",
+      "Bash(powershell.exe:*)"
+    ]
+  }
+}
