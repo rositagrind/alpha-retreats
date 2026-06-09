@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import {
-  LayoutDashboard, Mountain, CalendarCheck, Users, Briefcase, MessageSquare, Menu, X, LogOut
+  LayoutDashboard, Mountain, CalendarCheck, Users, Briefcase, MessageSquare, Menu, X, LogOut, UserCheck
 } from 'lucide-react';
 
 const navItems = [
@@ -13,6 +13,7 @@ const navItems = [
   { href: '/admin/retreats', label: 'Retreats', icon: Mountain },
   { href: '/admin/bookings', label: 'Bookings', icon: CalendarCheck },
   { href: '/admin/waitlist', label: 'Waitlist', icon: Users },
+  { href: '/admin/members', label: 'Members', icon: UserCheck },
   { href: '/admin/corporate', label: 'Corporate', icon: Briefcase },
   { href: '/admin/contact', label: 'Messages', icon: MessageSquare },
 ];

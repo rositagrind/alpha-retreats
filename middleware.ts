@@ -44,9 +44,29 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  if (path.startsWith('/members') && path !== '/members/login') {
+  if (
+    path.startsWith('/members') &&
+    path !== '/members/login' &&
+    path !== '/members/signup'
+  ) {
     if (!session) {
       return NextResponse.redirect(new URL('/members/login', req.url));
+    }
+
+    if (path !== '/members/pending') {
+      const { data: memberProfile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      if (!memberProfile || (memberProfile as { role: string }).role === 'pending') {
+        return NextResponse.redirect(new URL('/members/pending', req.url));
+      }
+
+      if ((memberProfile as { role: string }).role !== 'member') {
+        return NextResponse.redirect(new URL('/members/login', req.url));
+      }
     }
   }
 
