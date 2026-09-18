@@ -74,7 +74,7 @@ export default function AdminLoginPage() {
                 className="input-dark"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@alpharetreats.com"
+                placeholder="admin@alpha-retreats.com"
                 autoComplete="email"
                 required
               />

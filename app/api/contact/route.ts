@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const ADMIN_EMAIL = 'salvadorsequerrarosa@gmail.com';
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,6 +30,14 @@ export async function POST(req: NextRequest) {
       console.error('Contact insert error:', error);
       return NextResponse.json({ error: 'Failed to send message. Please try again.' }, { status: 500 });
     }
+
+    // Notify admin
+    await resend.emails.send({
+      from: 'Alpha Retreats <notifications@alpha-retreats.com>',
+      to: ADMIN_EMAIL,
+      subject: `New contact form — ${name.trim()}`,
+      html: `<p><strong>${name.trim()}</strong> sent a message via the contact form.</p><p>Email: ${email.trim().toLowerCase()}</p>${subject ? `<p>Subject: ${subject.trim()}</p>` : ''}<p>Message:</p><blockquote>${message.trim()}</blockquote>`,
+    }).catch(() => {});
 
     return NextResponse.json({ message: 'Message sent. We will reply within 24 hours.' });
   } catch {

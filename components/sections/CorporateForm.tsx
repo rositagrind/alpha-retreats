@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Button from '@/components/ui/Button';
+import { trackEvent } from '@/lib/analytics';
 
 export default function CorporateForm() {
   const [form, setForm] = useState({
@@ -34,6 +35,7 @@ export default function CorporateForm() {
       if (res.ok) {
         setStatus('success');
         setMessage(data.message || 'Your enquiry has been received. We will be in touch within 24 hours.');
+        trackEvent('corporate_enquiry_submit', { team_size: form.team_size ? Number(form.team_size) : 0 });
       } else {
         setStatus('error');
         setMessage(data.error || 'Failed to submit enquiry. Please try again.');

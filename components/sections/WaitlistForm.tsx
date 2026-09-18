@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Button from '@/components/ui/Button';
+import { trackEvent } from '@/lib/analytics';
 
 export default function WaitlistForm({ source = 'homepage' }: { source?: string }) {
   const [firstName, setFirstName] = useState('');
@@ -32,6 +33,7 @@ export default function WaitlistForm({ source = 'homepage' }: { source?: string 
       if (res.ok) {
         setStatus('success');
         setMessage(data.message || 'You\'re on the list. We\'ll be in touch.');
+        trackEvent('waitlist_signup', { source });
         setEmail('');
         setFirstName('');
       } else {

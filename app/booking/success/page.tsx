@@ -81,7 +81,7 @@ export default async function BookingSuccessPage({ searchParams }: Props) {
           {!booking && sessionId && (
             <div className="bg-dark-card border border-dark-border rounded-lg p-6 mb-8">
               <p className="text-gray-400 font-body text-sm">
-                Your payment has been processed. If you don&apos;t receive a confirmation email within a few minutes, please contact us at hello@alpharetreats.com with your booking reference.
+                Your payment has been processed. If you don&apos;t receive a confirmation email within a few minutes, please contact us at hello@alpha-retreats.com with your booking reference.
               </p>
             </div>
           )}

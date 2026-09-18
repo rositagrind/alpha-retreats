@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     const emails = recipients.map((r) => ({
-      from: 'Alpha Retreats <hello@alpharetreats.com>',
+      from: 'Alpha Retreats <hello@alpha-retreats.com>',
       to: r.email,
       subject,
       html: body.replace(/\n/g, '<br>'),

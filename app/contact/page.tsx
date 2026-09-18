@@ -21,8 +21,8 @@ export default function ContactPage() {
               <div className="space-y-6">
                 <div>
                   <p className="font-heading text-lg text-off-white">EMAIL</p>
-                  <a href="mailto:hello@alpharetreats.com" className="text-burnt-orange font-body hover:text-orange-400 transition-colors">
-                    hello@alpharetreats.com
+                  <a href="mailto:hello@alpha-retreats.com" className="text-burnt-orange font-body hover:text-orange-400 transition-colors">
+                    hello@alpha-retreats.com
                   </a>
                 </div>
                 <div>

@@ -61,7 +61,7 @@ export default function Footer() {
               ))}
             </ul>
             <div className="mt-6">
-              <p className="text-gray-500 font-body text-xs">hello@alpharetreats.com</p>
+              <p className="text-gray-500 font-body text-xs">hello@alpha-retreats.com</p>
             </div>
           </div>
         </div>

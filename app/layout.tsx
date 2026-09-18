@@ -3,6 +3,7 @@ import { Bebas_Neue, Inter } from 'next/font/google';
 import './globals.css';
 import '@/lib/env';
 import SiteLayout from '@/components/layout/SiteLayout';
+import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 
 const bebasNeue = Bebas_Neue({
   weight: '400',
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${bebasNeue.variable} ${inter.variable} scroll-smooth`}>
       <body className="bg-dark-bg text-off-white font-body antialiased">
+        <GoogleAnalytics />
         <SiteLayout>{children}</SiteLayout>
       </body>
     </html>

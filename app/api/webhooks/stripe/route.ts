@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/supabase/server';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const ADMIN_EMAIL = 'salvadorsequerrarosa@gmail.com';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-04-10' });
 
@@ -56,6 +60,14 @@ export async function POST(req: NextRequest) {
       console.error('Failed to insert booking:', bookingError);
       return NextResponse.json({ error: 'Failed to record booking.' }, { status: 500 });
     }
+
+    // Notify admin
+    await resend.emails.send({
+      from: 'Alpha Retreats <notifications@alpha-retreats.com>',
+      to: ADMIN_EMAIL,
+      subject: `🔥 New booking — ${meta.first_name} ${meta.last_name}`,
+      html: `<p><strong>${meta.first_name} ${meta.last_name}</strong> just paid a deposit.</p><p>Email: ${meta.email}</p><p>Phone: ${meta.phone}</p><p>Spots: ${spots}</p><p>Deposit paid: €${meta.deposit_euros}</p><p>Total due: €${meta.total_euros}</p><p>Stripe session: ${session.id}</p>`,
+    }).catch(() => {});
 
     const { data: retreat } = await supabase
       .from('retreats')
