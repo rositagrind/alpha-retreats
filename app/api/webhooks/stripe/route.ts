@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/server';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const ADMIN_EMAIL = 'salvadorsequerrarosa@gmail.com';
+const ADMIN_EMAIL = 'alpharetreatsorg@gmail.com';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-04-10' });
 

@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/server';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const ADMIN_EMAIL = 'salvadorsequerrarosa@gmail.com';
+const ADMIN_EMAIL = 'alpharetreatsorg@gmail.com';
 const FROM_EMAIL = 'Alpha Retreats <notifications@alpha-retreats.com>';
 
 export async function POST(req: NextRequest) {
