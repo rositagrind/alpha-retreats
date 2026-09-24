@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: '404 — Lost in the Wild | Alpha Retreats',
+  title: '404: Lost in the Wild | Alpha Retreats',
 };
 
 export default function NotFound() {

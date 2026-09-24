@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       await resend.emails.send({
         from: FROM_EMAIL,
         to: ADMIN_EMAIL,
-        subject: `New waitlist signup — ${firstName || email}`,
+        subject: `New waitlist signup: ${firstName || email}`,
         html: `<p><strong>${firstName || 'Someone'}</strong> just joined the waitlist.</p><p>Email: ${email.trim().toLowerCase()}</p><p>Source: ${source || 'website'}</p>`,
       }).catch(() => {}); // don't fail the request if email fails
     }
@@ -48,14 +48,14 @@ export async function POST(req: NextRequest) {
       await resend.emails.send({
         from: FROM_EMAIL,
         to: email.trim().toLowerCase(),
-        subject: "You're in — Alpha Retreats",
+        subject: "You're in | Alpha Retreats",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a1a;">
             <p style="font-size: 20px; font-weight: bold; letter-spacing: 0.5px; color: #b5502e; margin-bottom: 16px;">YOU'RE IN.</p>
             <p>${first ? `${first}, y` : 'Y'}ou're on the Alpha Retreats waitlist.</p>
-            <p>No mass emails, no fake urgency. When a retreat opens — before it goes public — you hear about it first.</p>
+            <p>No mass emails, no fake urgency. When a retreat opens, you hear about it first, before it goes public.</p>
             <p>That's it. That's the email.</p>
-            <p style="margin-top: 32px;">— Salvador<br>Alpha Retreats</p>
+            <p style="margin-top: 32px;">Salvador<br>Alpha Retreats</p>
           </div>
         `,
       }).catch(() => {});

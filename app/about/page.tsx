@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'About Alpha Retreats — Why We Exist',
+  title: 'About Alpha Retreats | Why We Exist',
   description:
     'Alpha Retreats was built for one reason: to give men experiences that demand everything they have. Read our manifesto and meet the team.',
   openGraph: {
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const values = [
   {
     title: 'BROTHERHOOD',
-    desc: 'Men do not grow alone. The men you stand beside in hard moments become something permanent. We engineer the conditions for real bonds — not networking, but brotherhood.',
+    desc: 'Men do not grow alone. The men you stand beside in hard moments become something permanent. We engineer the conditions for real bonds. This is not networking. This is brotherhood.',
   },
   {
     title: 'NATURE',
@@ -23,7 +23,7 @@ const values = [
   },
   {
     title: 'PRIMAL CHALLENGE',
-    desc: 'Comfort is not the enemy of success — but it is often the enemy of growth. We put men in situations that require every resource they have. That is where transformation lives.',
+    desc: 'Comfort is not the enemy of success. It is often the enemy of growth. We put men in situations that require every resource they have. That is where transformation lives.',
   },
 ];
 
@@ -81,8 +81,8 @@ export default function AboutPage() {
           <div className="max-w-3xl mx-auto text-left space-y-5">
             <p className="text-gray-200 font-body text-xl leading-relaxed">
               Something has gone wrong with modern manhood. Not dramatically wrong. Quietly wrong.
-              Men who are objectively successful — who have built things, earned things, achieved
-              things — walking around with a low hum of disconnection. From nature. From other men.
+              Men who are objectively successful, who have built things, earned things, achieved
+              things, walking around with a low hum of disconnection. From nature. From other men.
               From themselves.
             </p>
             <p className="text-gray-300 font-body text-lg leading-relaxed">
@@ -91,7 +91,7 @@ export default function AboutPage() {
               in places that do not care about your job title.
             </p>
             <p className="text-gray-300 font-body text-lg leading-relaxed">
-              We take men who have earned the right to be here — curious, high-performing, willing —
+              We take men who have earned the right to be here, curious, high-performing, willing,
               and we put them in wilderness environments with other men of the same calibre. We give
               them challenges that require their full presence. We build fires. We go cold. We build
               things with our hands. We eat what we prepare.

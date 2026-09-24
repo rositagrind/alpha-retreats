@@ -6,7 +6,7 @@ import RetreatFilters from '@/components/sections/RetreatFilters';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'All Retreats — Men\'s Wilderness Experiences',
+  title: 'All Retreats | Men\'s Wilderness Experiences',
   description:
     'Browse all Alpha Retreats experiences. Filter by duration, activity type, and availability. Premium men-only retreats from €3,000.',
   openGraph: {

@@ -10,7 +10,7 @@ export default function Footer() {
               ALPHA RETREATS
             </Link>
             <p className="mt-4 text-gray-400 font-body text-sm leading-relaxed max-w-xs">
-              Built for Men. Forged in the Wild. Premium men&apos;s retreat experiences across the globe — for those who refuse to be ordinary.
+              Built for Men. Forged in the Wild. Premium men&apos;s retreat experiences across the globe, for those who refuse to be ordinary.
             </p>
             <div className="flex items-center gap-4 mt-6">
               {['Instagram', 'LinkedIn', 'YouTube'].map((social) => (

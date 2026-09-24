@@ -34,7 +34,7 @@ export default function HeroSection() {
             <span className="text-burnt-orange">ARE FORGED.</span>
           </h1>
           <p className="font-body text-gray-300 text-xl sm:text-2xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Premium men-only retreat experiences. 3–7 days of ice baths, wilderness, fire, and brotherhood. Global locations.
+            One to seven day retreats for a community of driven, successful men. Sharp mind. Sharp body. Disconnect from the noise, reconnect with nature and your most primal instincts. Global locations.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

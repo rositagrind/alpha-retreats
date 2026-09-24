@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
             currency: 'eur',
             unit_amount: depositAmount * 100,
             product_data: {
-              name: `${retreat.name} — Deposit (${numSpots} spot${numSpots > 1 ? 's' : ''})`,
+              name: `${retreat.name} Deposit (${numSpots} spot${numSpots > 1 ? 's' : ''})`,
               description: `${retreat.location}, ${retreat.country} · ${retreat.duration_days} days. Balance of €${(totalAmount - depositAmount).toLocaleString()} due 30 days before retreat.`,
               images: retreat.hero_image ? [retreat.hero_image] : [],
             },

@@ -4,44 +4,34 @@ import { motion } from 'framer-motion';
 
 const activities = [
   {
+    icon: '💪',
+    name: 'Strength & Longevity',
+    desc: 'A strength, mobility and longevity training program guided by a coach at every session.',
+  },
+  {
     icon: '🧊',
     name: 'Ice Baths',
-    desc: 'Cold water immersion that rewires your nervous system and forges mental resilience.',
+    desc: 'Cold water immersion using the Wim Hof Method to rewire your nervous system and build mental resilience.',
   },
   {
-    icon: '🏔',
-    name: 'Wilderness Hiking',
-    desc: 'Multi-day treks through terrain that demands your full respect and presence.',
-  },
-  {
-    icon: '🔥',
-    name: 'Fire Cooking',
-    desc: 'Prepare and cook everything over open flame. Real food. Real skill.',
-  },
-  {
-    icon: '🪓',
-    name: 'Axe Throwing',
-    desc: 'Precision, power, and the satisfaction of something primal done well.',
-  },
-  {
-    icon: '🏍',
-    name: 'Motorcycling',
-    desc: 'Road trips through mountain passes. Wind, speed, and full presence.',
+    icon: '🧖',
+    name: 'Sauna',
+    desc: 'Traditional heat therapy to recover the body, clear the mind, and slow down.',
   },
   {
     icon: '🪵',
-    name: 'Cabin Building',
-    desc: 'Use only what the forest provides. Build something that stands.',
+    name: 'Carpentry & Woodwork',
+    desc: 'Learn the basics of carpentry and cut your own piece of wood into an object you take home.',
   },
   {
-    icon: '🎣',
-    name: 'Fishing',
-    desc: 'Patience, skill, and the ancient practice of pulling food from wild water.',
+    icon: '🏕',
+    name: 'Wilderness Survival',
+    desc: 'Hike through the wild, learn the fauna and flora around you, and build your own shelter from what the land provides.',
   },
   {
     icon: '🥩',
-    name: 'Animal Butchery',
-    desc: 'Understand where food comes from. Ethical, whole-animal preparation.',
+    name: 'Fire Cooking',
+    desc: 'Learn how to cut and cook meat over open fire, guided by a Michelin starred chef.',
   },
 ];
 
@@ -52,7 +42,7 @@ export default function ActivitiesGrid() {
         <div className="text-center mb-12">
           <h2 className="heading-lg">THE EXPERIENCES</h2>
           <p className="text-gray-400 font-body mt-3 max-w-xl mx-auto">
-            Each retreat combines several of these disciplines. Every activity is chosen for a reason — to challenge, to build, to connect.
+            Each retreat combines several of these disciplines, chosen to challenge you, build you, and connect you to something real.
           </p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">

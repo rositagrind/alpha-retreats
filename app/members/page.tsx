@@ -6,7 +6,7 @@ import MembersDashboard from '@/components/members/MembersDashboard';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Members Dashboard — Alpha Retreats',
+  title: 'Members Dashboard | Alpha Retreats',
   description: 'Your Alpha Retreats member dashboard.',
 };
 

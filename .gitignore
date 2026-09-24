@@ -36,3 +36,4 @@ yarn-error.log*
 next-env.d.ts
 CONTENT/
 _to_delete/
+.claude/settings.local.json

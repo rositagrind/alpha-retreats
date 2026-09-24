@@ -2,16 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
-
-const MountainIcon = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-burnt-orange">
-    <path d="M14 6l-1-2H5v17h2v-7h5l1 2h7V6h-6zm4 8h-4l-1-2H7V6h5l1 2h5v6z" />
-    <path d="M8.5 13l2-4 2 4z" />
-    <path d="M13 10l3 6H10z" />
-  </svg>
-);
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -40,7 +33,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <Link href="/" className="flex items-center gap-2 group">
-            <MountainIcon />
+            <Image src="/logo.png" alt="Alpha Retreats" width={36} height={36} className="rounded-sm" />
             <span className="font-heading text-2xl text-off-white tracking-widest group-hover:text-burnt-orange transition-colors">
               ALPHA RETREATS
             </span>

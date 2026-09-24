@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const retreat = await getRetreat(params.slug);
   if (!retreat) return { title: 'Retreat Not Found' };
   return {
-    title: retreat.meta_title || `${retreat.name} — Alpha Retreats`,
+    title: retreat.meta_title || `${retreat.name} | Alpha Retreats`,
     description: retreat.meta_description || retreat.tagline || '',
     openGraph: {
       title: retreat.meta_title || retreat.name,

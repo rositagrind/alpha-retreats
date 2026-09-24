@@ -6,7 +6,7 @@ import type { Booking } from '@/types/database';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Booking Confirmed — Alpha Retreats',
+  title: 'Booking Confirmed | Alpha Retreats',
   description: 'Your Alpha Retreats booking is confirmed.',
 };
 

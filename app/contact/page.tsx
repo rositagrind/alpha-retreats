@@ -4,7 +4,7 @@ import ContactForm from '@/components/sections/ContactForm';
 export const metadata: Metadata = {
   title: 'Contact Alpha Retreats',
   description:
-    'Get in touch with Alpha Retreats. Questions about our retreats, corporate offsites, or anything else — we respond within 24 hours.',
+    'Get in touch with Alpha Retreats. Questions about our retreats or corporate offsites? We respond within 24 hours.',
 };
 
 export default function ContactPage() {

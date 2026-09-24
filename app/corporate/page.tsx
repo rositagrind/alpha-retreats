@@ -3,7 +3,7 @@ import Image from 'next/image';
 import CorporateForm from '@/components/sections/CorporateForm';
 
 export const metadata: Metadata = {
-  title: 'Corporate Team Retreats — Forge Your Team in the Wild',
+  title: 'Corporate Team Retreats | Forge Your Team in the Wild',
   description:
     'Tailor-made corporate offsites and team building for startups and mid-enterprise. Alpha Retreats designs a custom adventure package for your team.',
   openGraph: {
@@ -16,7 +16,7 @@ const valueProps = [
   {
     icon: '🤝',
     title: 'Real Trust, Built Hard',
-    desc: 'Trust built under pressure is the only kind that holds. Your team will face genuine challenges together — not trust-fall exercises.',
+    desc: 'Trust built under pressure is the only kind that holds. Your team will face genuine challenges together, not trust-fall exercises.',
   },
   {
     icon: '🧠',
@@ -49,7 +49,7 @@ const steps = [
   {
     step: '02',
     title: 'We Design Your Retreat',
-    desc: 'Our team builds a fully custom programme — location, activities, logistics, food, accommodation. All of it. You review and approve.',
+    desc: 'Our team builds a fully custom programme: location, activities, logistics, food, accommodation. All of it. You review and approve.',
   },
   {
     step: '03',
@@ -120,17 +120,6 @@ export default function CorporatePage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Quote section */}
-      <section className="section-padding bg-forest-green">
-        <div className="container-wide text-center max-w-3xl mx-auto">
-          <div className="text-burnt-orange text-5xl font-heading mb-6">&ldquo;</div>
-          <p className="text-off-white font-body text-2xl leading-relaxed mb-8 italic">
-            We sent our senior leadership team to a corporate Alpha Retreats offsite. What came back was a different team. Harder, closer, more honest with each other.
-          </p>
-          <p className="text-gray-400 font-body">David Liang — CEO, NorthStar Ventures, Singapore</p>
         </div>
       </section>
 

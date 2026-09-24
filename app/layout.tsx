@@ -20,26 +20,26 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Alpha Retreats — Built for Men. Forged in the Wild.',
+    default: 'Alpha Retreats | Built for Men. Forged in the Wild.',
     template: '%s | Alpha Retreats',
   },
   description:
-    'Premium men-only retreat experiences. 3–7 days of ice baths, wilderness hiking, fire cooking, motorcycling, and brotherhood. Global locations.',
+    'Premium men-only retreats for a community of driven, successful men. One to seven days to disconnect from the noise and reconnect with nature and your primal instincts.',
   keywords: ['mens retreat', 'alpha retreats', 'wilderness retreat', 'mens adventure', 'corporate offsite'],
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: process.env.NEXT_PUBLIC_SITE_URL,
     siteName: 'Alpha Retreats',
-    title: 'Alpha Retreats — Built for Men. Forged in the Wild.',
+    title: 'Alpha Retreats | Built for Men. Forged in the Wild.',
     description:
-      'Premium men-only retreat experiences. 3–7 days of ice baths, wilderness hiking, fire cooking, motorcycling, and brotherhood.',
+      'Premium men-only retreats for a community of driven, successful men. One to seven days to disconnect and reconnect with nature and your primal instincts.',
     images: [
       {
         url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200',
         width: 1200,
         height: 630,
-        alt: 'Alpha Retreats — Men forged in the wild',
+        alt: 'Alpha Retreats: men forged in the wild',
       },
     ],
   },

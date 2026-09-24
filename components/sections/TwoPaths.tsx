@@ -22,7 +22,7 @@ export default function TwoPaths() {
               <span className="font-body text-burnt-orange text-xs uppercase tracking-widest font-semibold mb-3">For Individuals</span>
               <h3 className="font-heading text-4xl lg:text-5xl text-off-white mb-4">THE PERSONAL RETREAT</h3>
               <p className="text-gray-300 font-body mb-6 max-w-sm leading-relaxed">
-                Join a group of like-minded men. 3–7 days. From €3,000. A shared experience that changes each man individually.
+                Join a community of like-minded men for one to seven days. A shared experience that changes each man individually.
               </p>
               <Link
                 href="/retreats"

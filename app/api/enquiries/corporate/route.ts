@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
-      subject: `\u{1F3E2} New CORPORATE enquiry — ${company_name.trim()}${team_size ? ` (${team_size} people)` : ''}`,
+      subject: `\u{1F3E2} New CORPORATE enquiry: ${company_name.trim()}${team_size ? ` (${team_size} people)` : ''}`,
       html: `
         <p><strong>${contact_name.trim()}</strong> at <strong>${company_name.trim()}</strong> submitted a corporate enquiry.</p>
         <p>Email: ${email.trim().toLowerCase()}</p>
@@ -57,13 +57,13 @@ export async function POST(req: NextRequest) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: email.trim().toLowerCase(),
-      subject: 'Enquiry received — Alpha Retreats',
+      subject: 'Enquiry received | Alpha Retreats',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a1a;">
           <p style="font-size: 20px; font-weight: bold; letter-spacing: 0.5px; color: #b5502e; margin-bottom: 16px;">ENQUIRY RECEIVED.</p>
-          <p>${contact_name.trim()}, got it — ${company_name.trim()}'s enquiry is in.</p>
+          <p>${contact_name.trim()}, got it. ${company_name.trim()}'s enquiry is in.</p>
           <p>I personally review every corporate enquiry. You'll hear from me directly within 24 hours, not an autoresponder.</p>
-          <p style="margin-top: 32px;">— Salvador<br>Alpha Retreats</p>
+          <p style="margin-top: 32px;">Salvador<br>Alpha Retreats</p>
         </div>
       `,
     }).catch(() => {});
