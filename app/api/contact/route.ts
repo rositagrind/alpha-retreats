@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       to: ADMIN_EMAIL,
       subject: `New contact form from ${name.trim()}`,
       html: `<p><strong>${name.trim()}</strong> sent a message via the contact form.</p><p>Email: ${email.trim().toLowerCase()}</p>${subject ? `<p>Subject: ${subject.trim()}</p>` : ''}<p>Message:</p><blockquote>${message.trim()}</blockquote>`,
-    }).catch(() => {});
+    }).catch((err) => console.error('Resend: contact notification failed', err));
 
     return NextResponse.json({ message: 'Message sent. We will reply within 24 hours.' });
   } catch {

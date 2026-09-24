@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
         to: ADMIN_EMAIL,
         subject: `New waitlist signup: ${firstName || email}`,
         html: `<p><strong>${firstName || 'Someone'}</strong> just joined the waitlist.</p><p>Email: ${email.trim().toLowerCase()}</p><p>Source: ${source || 'website'}</p>`,
-      }).catch(() => {}); // don't fail the request if email fails
+      }).catch((err) => console.error('Resend: waitlist admin notification failed', err)); // don't fail the request if email fails
     }
 
     // Confirm to the person who signed up — this was previously missing entirely,
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
             <p style="margin-top: 32px;">Salvador<br>Alpha Retreats</p>
           </div>
         `,
-      }).catch(() => {});
+      }).catch((err) => console.error('Resend: waitlist confirmation email failed', err));
     }
 
     return NextResponse.json({

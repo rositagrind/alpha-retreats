@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       to: ADMIN_EMAIL,
       subject: `🔥 New booking: ${meta.first_name} ${meta.last_name}`,
       html: `<p><strong>${meta.first_name} ${meta.last_name}</strong> just paid a deposit.</p><p>Email: ${meta.email}</p><p>Phone: ${meta.phone}</p><p>Spots: ${spots}</p><p>Deposit paid: €${meta.deposit_euros}</p><p>Total due: €${meta.total_euros}</p><p>Stripe session: ${session.id}</p>`,
-    }).catch(() => {});
+    }).catch((err) => console.error('Resend: booking confirmation admin notification failed', err));
 
     const { data: retreat } = await supabase
       .from('retreats')

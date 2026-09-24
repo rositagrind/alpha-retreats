@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         <p>Goals:</p>
         <blockquote>${goals.trim()}</blockquote>
       `,
-    }).catch(() => {});
+    }).catch((err) => console.error('Resend: corporate enquiry admin notification failed', err));
 
     // Confirm to the enquirer — also previously missing. The site promises
     // "we will be in touch within 24 hours" but nothing backed that up by email.
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
           <p style="margin-top: 32px;">Salvador<br>Alpha Retreats</p>
         </div>
       `,
-    }).catch(() => {});
+    }).catch((err) => console.error('Resend: corporate enquiry confirmation email failed', err));
 
     return NextResponse.json({ message: 'Your enquiry has been received. We will be in touch within 24 hours.' });
   } catch {
