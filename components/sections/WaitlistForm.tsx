@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import { trackEvent } from '@/lib/analytics';
 
-export default function WaitlistForm({ source = 'homepage' }: { source?: string }) {
+export default function WaitlistForm({ source = 'homepage', stacked = false }: { source?: string; stacked?: boolean }) {
   const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -58,7 +58,7 @@ export default function WaitlistForm({ source = 'homepage' }: { source?: string 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className={`flex gap-3 ${stacked ? 'flex-col' : 'flex-col sm:flex-row'}`}>
         <input
           type="text"
           placeholder="First Name"

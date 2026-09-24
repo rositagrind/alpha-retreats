@@ -177,7 +177,7 @@ export default function RetreatBookingPanel({ retreat }: { retreat: Retreat }) {
           <p className="text-gray-400 font-body text-sm mb-4">
             This retreat is not yet open for booking. Join the waitlist to be first to know when spots open.
           </p>
-          <WaitlistForm source={`retreat-${retreat.slug}`} />
+          <WaitlistForm source={`retreat-${retreat.slug}`} stacked />
         </div>
       )}
 
@@ -187,7 +187,7 @@ export default function RetreatBookingPanel({ retreat }: { retreat: Retreat }) {
           <p className="text-gray-400 font-body text-sm mb-4">
             Join the waitlist for future dates.
           </p>
-          <WaitlistForm source={`retreat-${retreat.slug}-soldout`} />
+          <WaitlistForm source={`retreat-${retreat.slug}-soldout`} stacked />
         </div>
       )}
 
