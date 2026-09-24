@@ -33,6 +33,11 @@ const activities = [
     name: 'Fire Cooking',
     desc: 'Learn how to cut and cook meat over open fire, guided by a Michelin starred chef.',
   },
+  {
+    icon: '🍷',
+    name: 'Brew & Wine Tasting',
+    desc: 'Sample craft beer and fine wine, tasted and paired by people who know their craft.',
+  },
 ];
 
 export default function ActivitiesGrid() {
