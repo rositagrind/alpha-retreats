@@ -5,7 +5,9 @@ import type { Waitlist } from '@/types/database';
 import Button from '@/components/ui/Button';
 import { Download, Send } from 'lucide-react';
 
-export default function AdminWaitlistTable({ waitlist }: { waitlist: Waitlist[] }) {
+type WaitlistRow = Waitlist & { retreats: { name: string } | null };
+
+export default function AdminWaitlistTable({ waitlist }: { waitlist: WaitlistRow[] }) {
   const [selected, setSelected] = useState<string[]>([]);
   const [showBroadcast, setShowBroadcast] = useState(false);
   const [subject, setSubject] = useState('');
@@ -89,7 +91,7 @@ export default function AdminWaitlistTable({ waitlist }: { waitlist: Waitlist[] 
             <form onSubmit={handleBroadcast} className="space-y-4">
               <div>
                 <label className="label-dark">Subject *</label>
-                <input className="input-dark" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Early access — new retreat announced" />
+                <input className="input-dark" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Early access: new retreat announced" />
               </div>
               <div>
                 <label className="label-dark">Body *</label>
@@ -115,7 +117,7 @@ export default function AdminWaitlistTable({ waitlist }: { waitlist: Waitlist[] 
                 <th className="px-4 py-3 text-left">
                   <input type="checkbox" checked={selected.length === waitlist.length && waitlist.length > 0} onChange={toggleAll} className="accent-burnt-orange" />
                 </th>
-                {['Email', 'First Name', 'Source', 'Joined'].map((h) => (
+                {['Email', 'First Name', 'Retreat', 'Joined'].map((h) => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-body uppercase tracking-wider text-gray-500">{h}</th>
                 ))}
               </tr>
@@ -130,7 +132,7 @@ export default function AdminWaitlistTable({ waitlist }: { waitlist: Waitlist[] 
                   </td>
                   <td className="px-4 py-3 font-body text-sm text-off-white">{w.email}</td>
                   <td className="px-4 py-3 font-body text-sm text-gray-400">{w.first_name || '—'}</td>
-                  <td className="px-4 py-3 font-body text-sm text-gray-500">{w.source || '—'}</td>
+                  <td className="px-4 py-3 font-body text-sm text-gray-500">{w.retreats?.name || (w.source === 'homepage' || w.source === 'website' ? 'General' : w.source) || '—'}</td>
                   <td className="px-4 py-3 font-body text-sm text-gray-500">{new Date(w.created_at).toLocaleDateString('en-GB')}</td>
                 </tr>
               ))}

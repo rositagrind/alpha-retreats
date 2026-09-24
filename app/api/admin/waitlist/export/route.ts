@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient, createRouteClient } from '@/lib/supabase/server';
+import type { Waitlist } from '@/types/database';
+
+type WaitlistRow = Waitlist & { retreats: { name: string } | null };
 
 export async function GET() {
   try {
@@ -15,16 +18,17 @@ export async function GET() {
 
     const { data: waitlist } = await supabase
       .from('waitlist')
-      .select('*')
+      .select('*, retreats(name)')
       .order('created_at', { ascending: false });
 
     if (!waitlist) return NextResponse.json({ error: 'Failed to fetch waitlist.' }, { status: 500 });
 
-    const headers = ['ID', 'Email', 'First Name', 'Source', 'Joined At'];
-    const rows = waitlist.map((w) => [
+    const headers = ['ID', 'Email', 'First Name', 'Retreat', 'Source', 'Joined At'];
+    const rows = (waitlist as unknown as WaitlistRow[]).map((w) => [
       w.id,
       w.email,
       w.first_name || '',
+      w.retreats?.name || '',
       w.source || '',
       new Date(w.created_at).toISOString(),
     ]);

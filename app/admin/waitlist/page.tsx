@@ -7,7 +7,7 @@ export default async function AdminWaitlistPage() {
   const supabase = createAdminClient();
   const { data: waitlist } = await supabase
     .from('waitlist')
-    .select('*')
+    .select('*, retreats(name)')
     .order('created_at', { ascending: false });
 
   return (

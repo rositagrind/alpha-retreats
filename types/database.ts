@@ -123,6 +123,7 @@ export interface Database {
           email: string;
           first_name: string | null;
           source: string | null;
+          retreat_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -130,6 +131,7 @@ export interface Database {
           email: string;
           first_name?: string | null;
           source?: string | null;
+          retreat_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -137,6 +139,7 @@ export interface Database {
           email?: string;
           first_name?: string | null;
           source?: string | null;
+          retreat_id?: string | null;
           created_at?: string;
         };
         Relationships: [];

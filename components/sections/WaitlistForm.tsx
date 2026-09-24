@@ -4,7 +4,17 @@ import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import { trackEvent } from '@/lib/analytics';
 
-export default function WaitlistForm({ source = 'homepage', stacked = false }: { source?: string; stacked?: boolean }) {
+export default function WaitlistForm({
+  source = 'homepage',
+  stacked = false,
+  retreatId,
+  retreatName,
+}: {
+  source?: string;
+  stacked?: boolean;
+  retreatId?: string;
+  retreatName?: string;
+}) {
   const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -27,7 +37,7 @@ export default function WaitlistForm({ source = 'homepage', stacked = false }: {
       const res = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, firstName, source }),
+        body: JSON.stringify({ email, firstName, source, retreatId, retreatName }),
       });
       const data = await res.json();
       if (res.ok) {

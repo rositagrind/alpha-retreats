@@ -43,9 +43,13 @@ create table waitlist (
   email text not null,
   first_name text,
   source text,
-  created_at timestamptz default now(),
-  constraint waitlist_email_unique unique (email)
+  retreat_id uuid references retreats(id),
+  created_at timestamptz default now()
 );
+-- One signup per email for the general waitlist (retreat_id is null).
+create unique index waitlist_email_general_unique on waitlist (email) where retreat_id is null;
+-- One signup per email per specific retreat.
+create unique index waitlist_email_retreat_unique on waitlist (email, retreat_id) where retreat_id is not null;
 alter table waitlist enable row level security;
 
 create table bookings (

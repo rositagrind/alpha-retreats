@@ -9,7 +9,7 @@ const FROM_EMAIL = 'Alpha Retreats <notifications@alpha-retreats.com>';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, firstName, source } = body;
+    const { email, firstName, source, retreatId, retreatName } = body;
 
     if (!email || typeof email !== 'string') {
       return NextResponse.json({ error: 'Valid email is required.' }, { status: 400 });
@@ -18,11 +18,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Please provide a valid email address.' }, { status: 400 });
     }
 
+    const hasRetreat = typeof retreatId === 'string' && retreatId.length > 0;
+
     const supabase = createAdminClient();
     const { error } = await supabase.from('waitlist').insert({
       email: email.trim().toLowerCase(),
       first_name: firstName?.trim() || null,
       source: source || 'website',
+      retreat_id: hasRetreat ? retreatId : null,
     });
 
     const alreadyOnList = error?.code === '23505';
@@ -31,13 +34,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to join waitlist. Please try again.' }, { status: 500 });
     }
 
+    const retreatLabel = hasRetreat && retreatName ? retreatName : null;
+
     // Notify admin (skip for duplicate signups — no need to notify twice)
     if (!alreadyOnList) {
       await resend.emails.send({
         from: FROM_EMAIL,
         to: ADMIN_EMAIL,
-        subject: `New waitlist signup: ${firstName || email}`,
-        html: `<p><strong>${firstName || 'Someone'}</strong> just joined the waitlist.</p><p>Email: ${email.trim().toLowerCase()}</p><p>Source: ${source || 'website'}</p>`,
+        subject: retreatLabel
+          ? `New waitlist signup for ${retreatLabel}: ${firstName || email}`
+          : `New waitlist signup: ${firstName || email}`,
+        html: `<p><strong>${firstName || 'Someone'}</strong> just joined the waitlist${retreatLabel ? ` for <strong>${retreatLabel}</strong>` : ''}.</p><p>Email: ${email.trim().toLowerCase()}</p><p>Source: ${source || 'website'}</p>`,
       }).catch((err) => console.error('Resend: waitlist admin notification failed', err)); // don't fail the request if email fails
     }
 
@@ -52,8 +59,8 @@ export async function POST(req: NextRequest) {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a1a;">
             <p style="font-size: 20px; font-weight: bold; letter-spacing: 0.5px; color: #b5502e; margin-bottom: 16px;">YOU'RE IN.</p>
-            <p>${first ? `${first}, y` : 'Y'}ou're on the Alpha Retreats waitlist.</p>
-            <p>No mass emails, no fake urgency. When a retreat opens, you hear about it first, before it goes public.</p>
+            <p>${first ? `${first}, y` : 'Y'}ou're on the Alpha Retreats waitlist${retreatLabel ? ` for ${retreatLabel}` : ''}.</p>
+            <p>No mass emails, no fake urgency. When ${retreatLabel ? 'a spot opens for this retreat' : 'a retreat opens'}, you hear about it first, before it goes public.</p>
             <p>That's it. That's the email.</p>
             <p style="margin-top: 32px;">Salvador<br>Alpha Retreats</p>
           </div>
@@ -63,8 +70,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       message: alreadyOnList
-        ? 'You are already on the waitlist. We will be in touch.'
-        : 'You are on the list. We will be in touch when spots open.',
+        ? retreatLabel
+          ? `You are already on the waitlist for ${retreatLabel}. We will be in touch.`
+          : 'You are already on the waitlist. We will be in touch.'
+        : retreatLabel
+          ? `You are on the list for ${retreatLabel}. We will be in touch when spots open.`
+          : 'You are on the list. We will be in touch when spots open.',
     });
   } catch {
     return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
