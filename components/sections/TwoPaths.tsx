@@ -36,7 +36,7 @@ export default function TwoPaths() {
           <div className="relative group overflow-hidden rounded-r-lg">
             <div className="relative h-96 lg:h-[500px]">
               <Image
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&q=80"
+                src="/corporate retreats.jpg"
                 alt="Corporate team offsite"
                 fill
                 className="object-cover object-center transition-transform duration-700 group-hover:scale-105"

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     'Tailor-made corporate offsites and team building for startups and mid-enterprise. Alpha Retreats designs a custom adventure package for your team.',
   openGraph: {
     title: 'Corporate Team Retreats | Alpha Retreats',
-    images: ['https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200'],
+    images: ['/corporate retreats.jpg'],
   },
 };
 
@@ -65,7 +65,7 @@ export default function CorporatePage() {
       <section className="relative py-32 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80"
+            src="/corporate retreats.jpg"
             alt="Corporate team in the wild"
             fill
             className="object-cover object-center"
