@@ -193,7 +193,6 @@ export default function RetreatForm({ retreat }: { retreat?: Retreat }) {
     setStatus('loading');
     setError('');
 
-    const supabase = createClient();
     const payload = {
       name: form.name.trim(),
       slug: form.slug.trim(),
@@ -220,13 +219,19 @@ export default function RetreatForm({ retreat }: { retreat?: Retreat }) {
       meta_description: form.meta_description.trim() || null,
     };
 
-    const { error: saveError } = isEdit
-      ? await supabase.from('retreats').update(payload).eq('id', retreat!.id)
-      : await supabase.from('retreats').insert(payload);
+    const url = isEdit
+      ? `/api/admin/retreats/${retreat!.id}`
+      : '/api/admin/retreats';
+    const res = await fetch(url, {
+      method: isEdit ? 'PATCH' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-    if (saveError) {
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
       setStatus('error');
-      setError(saveError.message || 'Failed to save retreat.');
+      setError(body.error || 'Failed to save retreat.');
       return;
     }
     setStatus('success');
