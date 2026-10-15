@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-const ADMIN_EMAIL = 'alpharetreatsorg@gmail.com';
+import { ADMIN_EMAIL, FROM_EMAIL, escapeHtml, sendEmail } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,12 +29,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Notify admin
-    await resend.emails.send({
-      from: 'Alpha Retreats <notifications@alpha-retreats.com>',
+    await sendEmail({
+      from: FROM_EMAIL,
       to: ADMIN_EMAIL,
+      replyTo: email.trim().toLowerCase(),
       subject: `New contact form from ${name.trim()}`,
-      html: `<p><strong>${name.trim()}</strong> sent a message via the contact form.</p><p>Email: ${email.trim().toLowerCase()}</p>${subject ? `<p>Subject: ${subject.trim()}</p>` : ''}<p>Message:</p><blockquote>${message.trim()}</blockquote>`,
-    }).catch((err) => console.error('Resend: contact notification failed', err));
+      html: `<p><strong>${escapeHtml(name.trim())}</strong> sent a message via the contact form.</p><p>Email: ${escapeHtml(email.trim().toLowerCase())}</p>${subject ? `<p>Subject: ${escapeHtml(subject.trim())}</p>` : ''}<p>Message:</p><blockquote>${escapeHtml(message.trim())}</blockquote>`,
+    }, 'contact notification');
 
     return NextResponse.json({ message: 'Message sent. We will reply within 24 hours.' });
   } catch {

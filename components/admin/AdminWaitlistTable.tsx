@@ -1,13 +1,26 @@
 'use client';
 
-import { useState } from 'react';
-import type { Waitlist } from '@/types/database';
+import { useMemo, useState } from 'react';
+import type { Retreat, Waitlist } from '@/types/database';
 import Button from '@/components/ui/Button';
 import { Download, Send } from 'lucide-react';
 
 type WaitlistRow = Waitlist & { retreats: { name: string } | null };
+type RetreatOption = Pick<Retreat, 'id' | 'name' | 'status'>;
 
-export default function AdminWaitlistTable({ waitlist }: { waitlist: WaitlistRow[] }) {
+// 'all', 'general' (signed up without a specific retreat), or a retreat id.
+type Filter = string;
+
+export default function AdminWaitlistTable({
+  waitlist: allSignups,
+  retreats,
+  initialFilter = 'all',
+}: {
+  waitlist: WaitlistRow[];
+  retreats: RetreatOption[];
+  initialFilter?: Filter;
+}) {
+  const [filter, setFilter] = useState<Filter>(initialFilter);
   const [selected, setSelected] = useState<string[]>([]);
   const [showBroadcast, setShowBroadcast] = useState(false);
   const [subject, setSubject] = useState('');
@@ -15,8 +28,40 @@ export default function AdminWaitlistTable({ waitlist }: { waitlist: WaitlistRow
   const [broadcastStatus, setBroadcastStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [broadcastMessage, setBroadcastMessage] = useState('');
 
+  const counts = useMemo(() => {
+    const byRetreat: Record<string, number> = {};
+    let general = 0;
+    for (const w of allSignups) {
+      if (w.retreat_id) byRetreat[w.retreat_id] = (byRetreat[w.retreat_id] || 0) + 1;
+      else general++;
+    }
+    return { byRetreat, general };
+  }, [allSignups]);
+
+  // Show every retreat that has signups or is currently collecting them.
+  const filterOptions = retreats.filter(
+    (r) => counts.byRetreat[r.id] || r.status === 'coming_soon' || r.status === 'sold_out'
+  );
+
+  const waitlist = useMemo(() => {
+    if (filter === 'all') return allSignups;
+    if (filter === 'general') return allSignups.filter((w) => !w.retreat_id);
+    return allSignups.filter((w) => w.retreat_id === filter);
+  }, [allSignups, filter]);
+
+  const changeFilter = (next: Filter) => {
+    setFilter(next);
+    setSelected([]);
+    const url = new URL(window.location.href);
+    if (next === 'all') url.searchParams.delete('retreat');
+    else url.searchParams.set('retreat', next);
+    window.history.replaceState(null, '', url);
+  };
+
+  const allVisibleSelected = waitlist.length > 0 && waitlist.every((w) => selected.includes(w.id));
+
   const toggleAll = () => {
-    setSelected(selected.length === waitlist.length ? [] : waitlist.map((w) => w.id));
+    setSelected(allVisibleSelected ? [] : waitlist.map((w) => w.id));
   };
 
   const toggleOne = (id: string) => {
@@ -24,7 +69,8 @@ export default function AdminWaitlistTable({ waitlist }: { waitlist: WaitlistRow
   };
 
   const handleExport = () => {
-    window.open('/api/admin/waitlist/export', '_blank');
+    const qs = filter === 'all' ? '' : `?retreat=${encodeURIComponent(filter)}`;
+    window.open(`/api/admin/waitlist/export${qs}`, '_blank');
   };
 
   const handleBroadcast = async (e: React.FormEvent) => {
@@ -57,6 +103,19 @@ export default function AdminWaitlistTable({ waitlist }: { waitlist: WaitlistRow
     <div>
       {/* Actions */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
+        <select
+          className="input-dark w-auto"
+          value={filter}
+          onChange={(e) => changeFilter(e.target.value)}
+        >
+          <option value="all">All waitlists ({allSignups.length})</option>
+          <option value="general">General ({counts.general})</option>
+          {filterOptions.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.name} ({counts.byRetreat[r.id] || 0}){r.status !== 'coming_soon' && r.status !== 'sold_out' ? ` · ${r.status.replace('_', ' ')}` : ''}
+            </option>
+          ))}
+        </select>
         <span className="font-body text-sm text-gray-500">{waitlist.length} signups · {selected.length} selected</span>
         <button
           onClick={() => setShowBroadcast(!showBroadcast)}
@@ -71,7 +130,7 @@ export default function AdminWaitlistTable({ waitlist }: { waitlist: WaitlistRow
           className="flex items-center gap-2 font-body text-sm px-4 py-2 bg-dark-card border border-dark-border rounded text-gray-300 hover:border-gray-500 transition-colors"
         >
           <Download className="w-4 h-4" />
-          Export CSV
+          {filter === 'all' ? 'Export CSV' : 'Export this list'}
         </button>
       </div>
 
@@ -115,7 +174,7 @@ export default function AdminWaitlistTable({ waitlist }: { waitlist: WaitlistRow
             <thead>
               <tr className="border-b border-dark-border">
                 <th className="px-4 py-3 text-left">
-                  <input type="checkbox" checked={selected.length === waitlist.length && waitlist.length > 0} onChange={toggleAll} className="accent-burnt-orange" />
+                  <input type="checkbox" checked={allVisibleSelected} onChange={toggleAll} className="accent-burnt-orange" />
                 </th>
                 {['Email', 'First Name', 'Retreat', 'Joined'].map((h) => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-body uppercase tracking-wider text-gray-500">{h}</th>
@@ -124,7 +183,7 @@ export default function AdminWaitlistTable({ waitlist }: { waitlist: WaitlistRow
             </thead>
             <tbody>
               {waitlist.length === 0 ? (
-                <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-600 font-body text-sm">No signups yet</td></tr>
+                <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-600 font-body text-sm">{filter === 'all' ? 'No signups yet' : 'No signups on this waitlist yet'}</td></tr>
               ) : waitlist.map((w) => (
                 <tr key={w.id} className="border-b border-dark-border hover:bg-dark-bg transition-colors">
                   <td className="px-4 py-3">

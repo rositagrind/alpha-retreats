@@ -1,30 +1,34 @@
-import { NextResponse } from 'next/server';
-import { createAdminClient, createRouteClient } from '@/lib/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { createAdminClient } from '@/lib/supabase/server';
+import { requireAdmin } from '@/lib/admin-auth';
 import type { Waitlist } from '@/types/database';
 
-type WaitlistRow = Waitlist & { retreats: { name: string } | null };
+type WaitlistRow = Waitlist & { retreats: { name: string; slug: string } | null };
 
-export async function GET() {
+// ?retreat=<id> exports one retreat's waitlist, ?retreat=general the general
+// list (no retreat), and no parameter exports everything.
+export async function GET(req: NextRequest) {
   try {
-    const authClient = createRouteClient();
-    const { data: { session } } = await authClient.auth.getSession();
-    if (!session) return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    const denied = await requireAdmin();
+    if (denied) return denied;
 
     const supabase = createAdminClient();
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
-    if (!profile || profile.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
-    }
+    const retreatFilter = req.nextUrl.searchParams.get('retreat');
 
-    const { data: waitlist } = await supabase
+    let query = supabase
       .from('waitlist')
-      .select('*, retreats(name)')
+      .select('*, retreats(name, slug)')
       .order('created_at', { ascending: false });
+    if (retreatFilter === 'general') query = query.is('retreat_id', null);
+    else if (retreatFilter) query = query.eq('retreat_id', retreatFilter);
+
+    const { data: waitlist } = await query;
 
     if (!waitlist) return NextResponse.json({ error: 'Failed to fetch waitlist.' }, { status: 500 });
 
+    const rows = waitlist as unknown as WaitlistRow[];
     const headers = ['ID', 'Email', 'First Name', 'Retreat', 'Source', 'Joined At'];
-    const rows = (waitlist as unknown as WaitlistRow[]).map((w) => [
+    const csvRows = rows.map((w) => [
       w.id,
       w.email,
       w.first_name || '',
@@ -33,14 +37,16 @@ export async function GET() {
       new Date(w.created_at).toISOString(),
     ]);
 
-    const csv = [headers, ...rows]
+    const csv = [headers, ...csvRows]
       .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
       .join('\n');
+
+    const suffix = retreatFilter === 'general' ? '-general' : retreatFilter ? `-${rows[0]?.retreats?.slug || 'retreat'}` : '';
 
     return new NextResponse(csv, {
       headers: {
         'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="alpha-retreats-waitlist-${new Date().toISOString().split('T')[0]}.csv"`,
+        'Content-Disposition': `attachment; filename="alpha-retreats-waitlist${suffix}-${new Date().toISOString().split('T')[0]}.csv"`,
       },
     });
   } catch {

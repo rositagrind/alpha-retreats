@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
+import { requireAdmin } from '@/lib/admin-auth';
 
 function slugify(str: string) {
   return str
@@ -10,6 +11,9 @@ function slugify(str: string) {
 }
 
 export async function POST(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   const payload = await req.json();
 
   if (typeof payload.slug === 'string' && payload.slug.trim()) {

@@ -190,6 +190,16 @@ export default function RetreatForm({ retreat }: { retreat?: Retreat }) {
     e.preventDefault();
     const err = validate();
     if (err) { setError(err); setStatus('error'); return; }
+
+    // Saving coming_soon/sold_out -> available emails this retreat's waitlist (see PATCH route).
+    const opensSpots =
+      isEdit &&
+      (retreat!.status === 'coming_soon' || retreat!.status === 'sold_out') &&
+      form.status === 'available';
+    if (opensSpots && !window.confirm('This will email everyone on this retreat\'s waitlist that spots are open. Continue?')) {
+      return;
+    }
+
     setStatus('loading');
     setError('');
 
@@ -233,6 +243,11 @@ export default function RetreatForm({ retreat }: { retreat?: Retreat }) {
       setStatus('error');
       setError(body.error || 'Failed to save retreat.');
       return;
+    }
+    const result = await res.json().catch(() => ({}));
+    if (result.notified) {
+      const { sent, failed } = result.notified as { sent: number; failed: number };
+      window.alert(`Waitlist notified: ${sent} email${sent === 1 ? '' : 's'} sent${failed ? `, ${failed} failed` : ''}.`);
     }
     setStatus('success');
     router.push('/admin/retreats');

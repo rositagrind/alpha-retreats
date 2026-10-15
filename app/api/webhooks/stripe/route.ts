@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/supabase/server';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-const ADMIN_EMAIL = 'alpharetreatsorg@gmail.com';
+import { ADMIN_EMAIL, FROM_EMAIL, escapeHtml, sendEmail } from '@/lib/email';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-04-10' });
 
@@ -62,12 +59,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Notify admin
-    await resend.emails.send({
-      from: 'Alpha Retreats <notifications@alpha-retreats.com>',
+    await sendEmail({
+      from: FROM_EMAIL,
       to: ADMIN_EMAIL,
       subject: `🔥 New booking: ${meta.first_name} ${meta.last_name}`,
-      html: `<p><strong>${meta.first_name} ${meta.last_name}</strong> just paid a deposit.</p><p>Email: ${meta.email}</p><p>Phone: ${meta.phone}</p><p>Spots: ${spots}</p><p>Deposit paid: €${meta.deposit_euros}</p><p>Total due: €${meta.total_euros}</p><p>Stripe session: ${session.id}</p>`,
-    }).catch((err) => console.error('Resend: booking confirmation admin notification failed', err));
+      html: `<p><strong>${escapeHtml(meta.first_name)} ${escapeHtml(meta.last_name)}</strong> just paid a deposit.</p><p>Email: ${escapeHtml(meta.email)}</p><p>Phone: ${escapeHtml(meta.phone)}</p><p>Spots: ${spots}</p><p>Deposit paid: €${escapeHtml(meta.deposit_euros)}</p><p>Total due: €${escapeHtml(meta.total_euros)}</p><p>Stripe session: ${session.id}</p>`,
+    }, 'booking admin notification');
 
     const { data: retreat } = await supabase
       .from('retreats')
