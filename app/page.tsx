@@ -8,6 +8,8 @@ import HeroSection from '@/components/sections/HeroSection';
 import ActivitiesGrid from '@/components/sections/ActivitiesGrid';
 import TwoPaths from '@/components/sections/TwoPaths';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Alpha Retreats | Built for Men. Forged in the Wild.',
   description:
