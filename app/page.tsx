@@ -5,8 +5,10 @@ import type { Retreat } from '@/types/database';
 import WaitlistForm from '@/components/sections/WaitlistForm';
 import RetreatCard from '@/components/sections/RetreatCard';
 import HeroSection from '@/components/sections/HeroSection';
+import VideoBlock from '@/components/sections/VideoBlock';
 import ActivitiesGrid from '@/components/sections/ActivitiesGrid';
 import TwoPaths from '@/components/sections/TwoPaths';
+import NearestRetreatPopup from '@/components/sections/NearestRetreatPopup';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,43 +39,41 @@ async function getFeaturedRetreats(): Promise<Retreat[]> {
   }
 }
 
+// The homepage popup: whichever bookable retreat has the soonest upcoming
+// date. Retreats without a start_date yet (nullsFirst: false) sort last
+// rather than first, so an undated "coming soon" listing doesn't jump the
+// queue ahead of one with a real date on the calendar.
+async function getNearestUpcomingRetreat(): Promise<Retreat | null> {
+  try {
+    const supabase = createAdminClient();
+    const { data } = await supabase
+      .from('retreats')
+      .select('*')
+      .in('status', ['coming_soon', 'available'])
+      .order('start_date', { ascending: true, nullsFirst: false })
+      .limit(1);
+    return data?.[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function HomePage() {
-  const featuredRetreats = await getFeaturedRetreats();
+  const [featuredRetreats, nearestRetreat] = await Promise.all([
+    getFeaturedRetreats(),
+    getNearestUpcomingRetreat(),
+  ]);
 
   return (
     <main>
+      <NearestRetreatPopup retreat={nearestRetreat} />
       <HeroSection />
-      <WhatIsSection />
+      <VideoBlock />
+      <UpcomingRetreats retreats={featuredRetreats} />
       <ActivitiesGrid />
       <TwoPaths />
-      <UpcomingRetreats retreats={featuredRetreats} />
       <WaitlistSection />
     </main>
-  );
-}
-
-function WhatIsSection() {
-  return (
-    <section className="section-padding bg-dark-bg">
-      <div className="container-wide">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="heading-lg mb-8">WHAT IS ALPHA RETREATS?</h2>
-          <p className="text-gray-300 font-body text-xl leading-relaxed mb-6">
-            Alpha Retreats is not a wellness holiday. It is a deliberately hard, deliberately raw
-            experience designed to strip away everything soft and remind you what you are made of.
-          </p>
-          <p className="text-gray-400 font-body text-lg leading-relaxed mb-6">
-            We bring together a community of driven, successful men and give them space to
-            disconnect from the noise of modern life. Sharp mind. Sharp body. A real reconnection
-            with nature and the primal instincts we have forgotten how to trust.
-          </p>
-          <p className="text-gray-400 font-body text-lg leading-relaxed">
-            One to seven days. Global locations. Every retreat is a hands on learning experience
-            that leaves you changed. That is a guarantee.
-          </p>
-        </div>
-      </div>
-    </section>
   );
 }
 
