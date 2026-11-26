@@ -1,10 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { useScroll, useMotionValueEvent } from 'framer-motion';
+import { motion, useScroll, useMotionValueEvent, useTransform } from 'framer-motion';
 
 const FRAME_COUNT = 20;
 const FRAME_SRC = (n: number) => `/axe-frames/axe-${String(n).padStart(2, '0')}.webp`;
+// The last frame is reached once the hero has scrolled this fraction of its
+// height off-screen, so the strike lands while it's still mostly visible.
+const FINISH_AT = 0.6;
+// How far (as a fraction of hero height) the background drifts down over the
+// full scroll-out: 0.4 → background moves at 60% of page speed.
+const PARALLAX = 0.4;
 
 type Frame = { source: CanvasImageSource; w: number; h: number };
 
@@ -131,13 +137,21 @@ export default function AxeScrollBackground({
 
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
+  // Progress 0 → 1 as the (normal-flow) hero scrolls from its resting position
+  // to fully off the top of the viewport.
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
-    offset: ['start start', 'end end'],
+    offset: ['start start', 'end start'],
   });
 
-  const frameFor = (progress: number) =>
-    Math.min(FRAME_COUNT, Math.max(1, Math.round(progress * (FRAME_COUNT - 1)) + 1));
+  // Background drifts down as the hero scrolls up, so it appears to move at
+  // ~60% of page speed and the animation stays in view longer.
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', `${PARALLAX * 100}%`]);
+
+  const frameFor = (progress: number) => {
+    const p = Math.min(1, progress / FINISH_AT);
+    return Math.min(FRAME_COUNT, Math.max(1, Math.round(p * (FRAME_COUNT - 1)) + 1));
+  };
 
   // Pick up the initial scroll position (e.g. page reloaded mid-hero).
   useEffect(() => {
@@ -154,7 +168,11 @@ export default function AxeScrollBackground({
   });
 
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+    <motion.div
+      className="absolute inset-0 z-0 overflow-hidden will-change-transform"
+      style={{ y: parallaxY }}
+      aria-hidden="true"
+    >
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
       {/* Fine wood-grain texture + dark overlay + subtle grain, per the Nov 2026 visual spec.
           Overlay lightened twice per Salvador's feedback that the frames read as too shaded:
@@ -169,6 +187,6 @@ export default function AxeScrollBackground({
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-dark-bg" />
-    </div>
+    </motion.div>
   );
 }
