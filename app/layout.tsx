@@ -4,6 +4,7 @@ import './globals.css';
 import '@/lib/env';
 import SiteLayout from '@/components/layout/SiteLayout';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
+import { SITE_URL, organizationJsonLd } from '@/lib/seo';
 
 const bebasNeue = Bebas_Neue({
   weight: '400',
@@ -19,6 +20,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  // Resolves relative canonical/OG URLs sitewide; previously unset, which is
+  // a Next.js build-time warning and left per-page canonical/OG image URLs
+  // ambiguous without it.
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Alpha Retreats | Built for Men. Forged in the Wild.',
     template: '%s | Alpha Retreats',
@@ -26,6 +31,9 @@ export const metadata: Metadata = {
   description:
     'Premium men-only retreats for a community of driven, successful men. One to seven days to disconnect from the noise and reconnect with nature and your primal instincts.',
   keywords: ['mens retreat', 'alpha retreats', 'wilderness retreat', 'mens adventure', 'corporate offsite'],
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -49,6 +57,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${bebasNeue.variable} ${inter.variable} scroll-smooth`}>
       <body className="bg-dark-bg text-off-white font-body antialiased">
+        {/* Sitewide Organization schema: the single clean entity Google and
+            AI engines can tie every page and mention of "Alpha Retreats"
+            back to. Part of the Nov 2026 SEO/AI-visibility pass. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+        />
         <GoogleAnalytics />
         <SiteLayout>{children}</SiteLayout>
       </body>

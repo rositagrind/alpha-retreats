@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: 'Corporate Team Retreats | Forge Your Team in the Wild',
   description:
     'Tailor-made corporate offsites and team building for startups and mid-enterprise. Alpha Retreats designs a custom adventure package for your team.',
+  alternates: {
+    canonical: '/corporate',
+  },
   openGraph: {
     title: 'Corporate Team Retreats | Alpha Retreats',
     images: ['/corporate retreats.jpg'],

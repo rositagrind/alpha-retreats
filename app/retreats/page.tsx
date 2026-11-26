@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: 'All Retreats | Men\'s Wilderness Experiences',
   description:
     'Browse all Alpha Retreats experiences. Filter by duration, activity type, and availability. Premium men-only retreats from €3,000.',
+  alternates: {
+    canonical: '/retreats',
+  },
   openGraph: {
     title: 'All Retreats | Alpha Retreats',
     images: ['https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200'],

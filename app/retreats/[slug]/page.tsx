@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/server';
 import type { Retreat, ItineraryDay } from '@/types/database';
 import RetreatBookingPanel from '@/components/sections/RetreatBookingPanel';
 import ItineraryAccordion from '@/components/sections/ItineraryAccordion';
+import { retreatJsonLd, breadcrumbJsonLd } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,6 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: retreat.meta_title || `${retreat.name} | Alpha Retreats`,
     description: retreat.meta_description || retreat.tagline || '',
+    alternates: {
+      canonical: `/retreats/${retreat.slug}`,
+    },
     openGraph: {
       title: retreat.meta_title || retreat.name,
       description: retreat.meta_description || retreat.tagline || '',
@@ -47,6 +51,26 @@ export default async function RetreatPage({ params }: Props) {
 
   return (
     <main className="pt-20">
+      {/* TouristTrip + breadcrumb structured data: the concrete, verifiable
+          facts (dates, price, location) AI engines can lift directly into an
+          answer, and what gives Google a rich result. Nov 2026 SEO pass. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(retreatJsonLd(retreat)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([
+              { name: 'Home', path: '/' },
+              { name: 'Retreats', path: '/retreats' },
+              { name: retreat.name, path: `/retreats/${retreat.slug}` },
+            ])
+          ),
+        }}
+      />
+
       {/* Hero */}
       <section className="relative h-[60vh] min-h-[400px] overflow-hidden">
         <Image

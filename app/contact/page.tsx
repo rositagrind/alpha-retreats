@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: 'Contact Alpha Retreats',
   description:
     'Get in touch with Alpha Retreats. Questions about our retreats or corporate offsites? We respond within 24 hours.',
+  alternates: {
+    canonical: '/contact',
+  },
 };
 
 export default function ContactPage() {

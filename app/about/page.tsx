@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: 'About Alpha Retreats | Why We Exist',
   description:
     'Alpha Retreats was built for one reason: to give men experiences that demand everything they have. Read our manifesto and meet the team.',
+  alternates: {
+    canonical: '/about',
+  },
   openGraph: {
     title: 'About Alpha Retreats',
     images: ['https://images.unsplash.com/photo-1551632811-561732d1e306?w=1200'],
