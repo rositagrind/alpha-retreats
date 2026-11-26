@@ -60,8 +60,11 @@ export default function AxeScrollBackground({
           style={{ opacity: n === activeFrame ? 1 : 0 }}
         />
       ))}
-      {/* Fine wood-grain texture + strong dark overlay + subtle grain, per the Nov 2026 visual spec */}
-      <div className="absolute inset-0 bg-black/65" />
+      {/* Fine wood-grain texture + dark overlay + subtle grain, per the Nov 2026 visual spec.
+          Lighter on phones (50% black) per Salvador's feedback that the mobile hero read as
+          too dark/hard to track the animation in; unchanged (65%) from tablet up, where the
+          image occupies proportionally less of a wider, shorter viewport. */}
+      <div className="absolute inset-0 bg-black/50 sm:bg-black/65" />
       <div
         className="absolute inset-0 opacity-[0.06] mix-blend-overlay"
         style={{

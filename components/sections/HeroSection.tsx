@@ -9,10 +9,16 @@ export default function HeroSection() {
   const wrapperRef = useRef<HTMLElement>(null);
 
   return (
-    // Tall scroll track: the sticky panel inside stays pinned while the axe
-    // animation scrubs through its 20 frames across this height, then normal
-    // page flow resumes (video block, etc.) once the user scrolls past it.
-    <section ref={wrapperRef} className="relative h-[220vh]">
+    // Scroll track: the sticky panel inside stays pinned — the page visually
+    // does not advance past the hero — while the axe animation scrubs through
+    // its 20 frames across this height, then normal page flow resumes (video
+    // block, etc.) once the user has scrolled all the way through it. Kept
+    // shorter (180vh, down from 220vh) so the whole sequence resolves with
+    // less scrolling, and the frames themselves (see AxeScrollBackground) are
+    // sampled unevenly from the source clip — only 1 is pure "before", most
+    // are the swing/impact, a handful are the settle — so nearly all of this
+    // scroll distance is spent on visible motion, not idle frames.
+    <section ref={wrapperRef} className="relative h-[180vh]">
       <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
         <AxeScrollBackground wrapperRef={wrapperRef} />
 
