@@ -12,8 +12,8 @@ export default function HeroSection() {
     // Normal-flow hero (no sticky pin): the page keeps scrolling down while the
     // axe animation scrubs through its frames as the hero leaves the viewport,
     // so visitors never feel stuck. AxeScrollBackground finishes the sequence
-    // early (while most of the hero is still visible) and moves its background
-    // slower than the page (parallax) to keep the animation on screen longer.
+    // early, while most of the hero is still visible, and only ever follows the
+    // scroll position; it never moves or eases the page itself.
     <section ref={wrapperRef} className="relative h-screen overflow-hidden">
       <div className="relative h-full flex items-center justify-center">
         <AxeScrollBackground wrapperRef={wrapperRef} />

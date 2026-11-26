@@ -1,16 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { motion, useScroll, useSpring, useMotionValueEvent, useTransform } from 'framer-motion';
+import { useScroll, useMotionValueEvent } from 'framer-motion';
 
 const FRAME_COUNT = 20;
 const FRAME_SRC = (n: number) => `/axe-frames/axe-${String(n).padStart(2, '0')}.webp`;
 // The last frame is reached once the hero has scrolled this fraction of its
 // height off-screen, so the strike lands while it's still mostly visible.
 const FINISH_AT = 0.6;
-// How far (as a fraction of hero height) the background drifts down over the
-// full scroll-out: 0.4 → background moves at 60% of page speed.
-const PARALLAX = 0.4;
 
 type Frame = { source: CanvasImageSource; w: number; h: number };
 
@@ -20,8 +17,8 @@ type Frame = { source: CanvasImageSource; w: number; h: number };
  * - Every frame is fetched and fully decoded up front (img.decode() →
  *   ImageBitmap), so the first pass is as smooth as later ones (stacked <img>s
  *   decoded lazily and stuttered the first time through).
- * - Scroll progress goes through a spring, so mouse-wheel steps (~100px jumps
- *   on PC) become an eased glide instead of skipping several frames at once.
+ * - The frame follows the scroll position directly (no spring or JS parallax),
+ *   so the page always scrolls natively and the animation never drives it.
  * - The position between frames is fractional and adjacent frames are
  *   cross-faded, so with only 20 source frames the motion still reads as
  *   continuous rather than as hard cuts.
@@ -37,6 +34,7 @@ export default function AxeScrollBackground({
   const drawn = useRef(-1); // position last painted (-1 = needs repaint)
   const raf = useRef(0);
   const reducedMotion = useRef(false);
+  const warmed = useRef(new Set<number>()); // frames already uploaded to the GPU
 
   const nearestLoaded = (want: number): Frame | null => {
     for (let d = 0; d < FRAME_COUNT; d++) {
@@ -64,6 +62,17 @@ export default function AxeScrollBackground({
       ctx.globalAlpha = alpha;
       ctx.drawImage(frame.source, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
     };
+
+    // Warm-up: the first drawImage of a bitmap uploads it to the GPU, which is
+    // what made the first pass stutter. Draw every newly loaded frame once
+    // here (at load time, not mid-scroll); the correct frame is painted over
+    // it below in the same task, so nothing visible flashes.
+    frames.current.forEach((f, i) => {
+      if (f && !warmed.current.has(i)) {
+        paint(f, 1);
+        warmed.current.add(i);
+      }
+    });
 
     const base = Math.floor(p);
     const t = p - base;
@@ -159,40 +168,37 @@ export default function AxeScrollBackground({
     offset: ['start start', 'end start'],
   });
 
-  // Eased copy of the scroll progress that drives the frames.
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 140,
-    damping: 28,
-    mass: 0.5,
-    restDelta: 0.0005,
-  });
-
-  // Background drifts down as the hero scrolls up, so it appears to move at
-  // ~60% of page speed and the animation stays in view longer. Tied to the raw
-  // scroll (not the spring) so it stays locked to the page content.
-  const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', `${PARALLAX * 100}%`]);
-
+  // The frame is a pure function of the current scroll position: no spring,
+  // no easing, no JS-driven parallax. The page scrolls natively and the
+  // animation simply follows wherever it is (an earlier spring made the frames
+  // lag and "catch up", and a JS parallax transform jittered against the page
+  // whenever the main thread was busy, e.g. on a first visit).
   const positionFor = (progress: number) =>
     1 + Math.min(1, Math.max(0, progress / FINISH_AT)) * (FRAME_COUNT - 1);
 
   // Pick up the initial scroll position (e.g. page reloaded mid-hero).
   useEffect(() => {
-    smoothProgress.jump(scrollYProgress.get());
     pos.current = positionFor(scrollYProgress.get());
     schedule();
-  }, [scrollYProgress, smoothProgress, schedule]);
+  }, [scrollYProgress, schedule]);
 
-  useMotionValueEvent(smoothProgress, 'change', (progress) => {
+  useMotionValueEvent(scrollYProgress, 'change', (progress) => {
     pos.current = positionFor(progress);
     schedule();
   });
 
   return (
-    <motion.div
-      className="absolute inset-0 z-0 overflow-hidden will-change-transform"
-      style={{ y: parallaxY }}
-      aria-hidden="true"
-    >
+    <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+      {/* Server-rendered poster of frame 1: visible on first paint, before the
+          JS has loaded/hydrated, so a first-time visitor never sees an empty
+          hero. The canvas (transparent until it draws) covers it afterwards. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={FRAME_SRC(1)}
+        alt=""
+        fetchPriority="high"
+        className="absolute inset-0 w-full h-full object-cover object-center"
+      />
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
       {/* Fine wood-grain texture + dark overlay + subtle grain, per the Nov 2026 visual spec.
           Overlay lightened twice per Salvador's feedback that the frames read as too shaded:
@@ -207,6 +213,6 @@ export default function AxeScrollBackground({
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-dark-bg" />
-    </motion.div>
+    </div>
   );
 }
