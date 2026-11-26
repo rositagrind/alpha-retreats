@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { motion, useScroll, useMotionValueEvent, useTransform } from 'framer-motion';
+import { motion, useScroll, useSpring, useMotionValueEvent, useTransform } from 'framer-motion';
 
 const FRAME_COUNT = 20;
 const FRAME_SRC = (n: number) => `/axe-frames/axe-${String(n).padStart(2, '0')}.webp`;
@@ -17,13 +17,14 @@ type Frame = { source: CanvasImageSource; w: number; h: number };
 /**
  * Scroll-scrubbed axe animation, drawn onto a single <canvas>.
  *
- * Why a canvas instead of 20 stacked <img>s toggled by opacity: browsers decode
- * hidden images lazily, so the first pass through the animation stuttered while
- * each frame was fetched/decoded on demand (smooth only on the second pass, once
- * everything was cached). Here every frame is fetched and fully decoded up front
- * (img.decode() → ImageBitmap), and scrolling just blits an already-decoded
- * bitmap, at most once per animation frame. Until a frame has loaded, the
- * nearest loaded frame is shown instead of a blank.
+ * - Every frame is fetched and fully decoded up front (img.decode() →
+ *   ImageBitmap), so the first pass is as smooth as later ones (stacked <img>s
+ *   decoded lazily and stuttered the first time through).
+ * - Scroll progress goes through a spring, so mouse-wheel steps (~100px jumps
+ *   on PC) become an eased glide instead of skipping several frames at once.
+ * - The position between frames is fractional and adjacent frames are
+ *   cross-faded, so with only 20 source frames the motion still reads as
+ *   continuous rather than as hard cuts.
  */
 export default function AxeScrollBackground({
   wrapperRef,
@@ -32,39 +33,53 @@ export default function AxeScrollBackground({
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frames = useRef<(Frame | null)[]>(Array(FRAME_COUNT).fill(null));
-  const target = useRef(1); // frame the scroll position asks for
-  const drawn = useRef(0); // frame currently painted (0 = nothing / needs repaint)
+  const pos = useRef(1); // fractional frame position wanted, 1 … FRAME_COUNT
+  const drawn = useRef(-1); // position last painted (-1 = needs repaint)
   const raf = useRef(0);
   const reducedMotion = useRef(false);
+
+  const nearestLoaded = (want: number): Frame | null => {
+    for (let d = 0; d < FRAME_COUNT; d++) {
+      for (const c of [want - d, want + d]) {
+        if (c >= 1 && c <= FRAME_COUNT && frames.current[c - 1]) return frames.current[c - 1];
+      }
+    }
+    return null;
+  };
 
   const draw = useCallback(() => {
     raf.current = 0;
     const canvas = canvasRef.current;
     if (!canvas || !canvas.width) return;
-    const want = reducedMotion.current ? FRAME_COUNT : target.current;
-
-    // Nearest loaded frame to the one we want (ties go to the earlier frame).
-    let frame: Frame | null = null;
-    let n = want;
-    for (let d = 0; d < FRAME_COUNT && !frame; d++) {
-      for (const c of [want - d, want + d]) {
-        if (c >= 1 && c <= FRAME_COUNT && frames.current[c - 1]) {
-          frame = frames.current[c - 1];
-          n = c;
-          break;
-        }
-      }
-    }
-    if (!frame || n === drawn.current) return;
-
+    const p = reducedMotion.current ? FRAME_COUNT : pos.current;
+    if (Math.abs(p - drawn.current) < 0.005) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    // object-fit: cover, centred
-    const scale = Math.max(canvas.width / frame.w, canvas.height / frame.h);
-    const w = frame.w * scale;
-    const h = frame.h * scale;
-    ctx.drawImage(frame.source, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
-    drawn.current = n;
+
+    const paint = (frame: Frame, alpha: number) => {
+      // object-fit: cover, centred
+      const scale = Math.max(canvas.width / frame.w, canvas.height / frame.h);
+      const w = frame.w * scale;
+      const h = frame.h * scale;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(frame.source, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+    };
+
+    const base = Math.floor(p);
+    const t = p - base;
+    const a = frames.current[base - 1];
+    const b = base < FRAME_COUNT ? frames.current[base] : null;
+
+    if (a) {
+      paint(a, 1);
+      if (b && t > 0.01) paint(b, t); // cross-fade toward the next frame
+    } else {
+      const fallback = nearestLoaded(Math.round(p));
+      if (!fallback) return;
+      paint(fallback, 1);
+    }
+    ctx.globalAlpha = 1;
+    drawn.current = p;
   }, []);
 
   const schedule = useCallback(() => {
@@ -92,7 +107,7 @@ export default function AxeScrollBackground({
         }
         if (cancelled) return;
         frames.current[n - 1] = frame;
-        drawn.current = 0; // nearest-frame choice may have changed
+        drawn.current = -1; // what can be painted may have changed
         schedule();
       } catch {
         /* frame failed to load: neighbours will be shown instead */
@@ -114,7 +129,7 @@ export default function AxeScrollBackground({
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(canvas.clientWidth * dpr);
       canvas.height = Math.round(canvas.clientHeight * dpr);
-      drawn.current = 0; // resizing clears the canvas
+      drawn.current = -1; // resizing clears the canvas
       schedule();
     };
     resize();
@@ -127,7 +142,7 @@ export default function AxeScrollBackground({
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     const apply = () => {
       reducedMotion.current = mq.matches;
-      drawn.current = 0;
+      drawn.current = -1;
       schedule();
     };
     apply();
@@ -144,27 +159,32 @@ export default function AxeScrollBackground({
     offset: ['start start', 'end start'],
   });
 
+  // Eased copy of the scroll progress that drives the frames.
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 140,
+    damping: 28,
+    mass: 0.5,
+    restDelta: 0.0005,
+  });
+
   // Background drifts down as the hero scrolls up, so it appears to move at
-  // ~60% of page speed and the animation stays in view longer.
+  // ~60% of page speed and the animation stays in view longer. Tied to the raw
+  // scroll (not the spring) so it stays locked to the page content.
   const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', `${PARALLAX * 100}%`]);
 
-  const frameFor = (progress: number) => {
-    const p = Math.min(1, progress / FINISH_AT);
-    return Math.min(FRAME_COUNT, Math.max(1, Math.round(p * (FRAME_COUNT - 1)) + 1));
-  };
+  const positionFor = (progress: number) =>
+    1 + Math.min(1, Math.max(0, progress / FINISH_AT)) * (FRAME_COUNT - 1);
 
   // Pick up the initial scroll position (e.g. page reloaded mid-hero).
   useEffect(() => {
-    target.current = frameFor(scrollYProgress.get());
+    smoothProgress.jump(scrollYProgress.get());
+    pos.current = positionFor(scrollYProgress.get());
     schedule();
-  }, [scrollYProgress, schedule]);
+  }, [scrollYProgress, smoothProgress, schedule]);
 
-  useMotionValueEvent(scrollYProgress, 'change', (progress) => {
-    const next = frameFor(progress);
-    if (next !== target.current) {
-      target.current = next;
-      schedule();
-    }
+  useMotionValueEvent(smoothProgress, 'change', (progress) => {
+    pos.current = positionFor(progress);
+    schedule();
   });
 
   return (
